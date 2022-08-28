@@ -15,15 +15,9 @@ const setGoal = async (req, res) => {
     })
   }
 
-  if (!req.body.user) {
-    return res.status(400).json({
-      message: "Need to add the user id"
-    })
-  }
-
   const goal = await Goal.create({
     text: req.body.text,
-    user: req.body.user
+    user: req.token.id
   })
 
   res.status(200).json(goal)
