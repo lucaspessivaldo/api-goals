@@ -36,10 +36,7 @@ const userRegister = async (req, res) => {
   })
 
   res.status(200).json({
-    message: 'Register page',
-    data: req.body,
-    hash: hash,
-    userDb: creatUser
+    message: 'user registered successfully'
   })
 }
 
@@ -55,6 +52,12 @@ const userLogin = async (req, res) => {
   }
 
   const isRighPassword = bcrypt.compareSync(password, user.password)
+
+  if (!isRighPassword) {
+    return res.status(403).json({
+      message: 'Password invalid'
+    })
+  }
 
   if (isRighPassword) {
     const userToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' })

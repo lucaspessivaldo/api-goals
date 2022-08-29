@@ -2,7 +2,7 @@ const Goal = require('../models/goalModel')
 
 //GET
 const getGoals = async (req, res) => {
-  const goals = await Goal.find()
+  const goals = await Goal.find({ user: req.token.id })
 
   res.status(200).json(goals)
 }
@@ -33,11 +33,13 @@ const updateGoal = async (req, res) => {
 
   const goal = await Goal.findById(req.params.id)
 
-  if (!goal) {
+  if (!goal || goal.user.toString() !== req.token.id) {
     return res.status(400).json({ message: "Goal not found" })
   }
 
-  const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body)
+  // const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body)
+  goal.text = req.body.text
+  const updatedGoal = await goal.save()
 
   res.status(200).json(updatedGoal)
 }
@@ -52,7 +54,7 @@ const deleteGoal = async (req, res) => {
 
   const goal = await Goal.findById(req.params.id)
 
-  if (!goal) {
+  if (!goal || goal.user.toString() !== req.token.id) {
     return res.status(400).json({ message: "Goal not found" })
   }
 
